@@ -1,4 +1,4 @@
-import puppeteer from "@cloudflare/puppeteer";
+import puppeteer from "cloudflare:puppeteer";
 
 const ALLOWED_HOSTS = [
   "support.roku.com",
