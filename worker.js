@@ -107,8 +107,12 @@ async function clickAllButtons(page) {
       break;
     }
 
-    await page.waitForTimeout(300);
+    await delay(300);
   }
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function escapeRegExp(str) {
