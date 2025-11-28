@@ -6,7 +6,7 @@ compatibility_date = "2024-04-03"
 binding = "AI"
 
 [browser]
-binding = "BROWSER"
+binding = "Puppeteer"
 
 [observability]
 enabled = true
