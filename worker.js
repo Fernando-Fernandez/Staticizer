@@ -26,7 +26,7 @@ export default {
     }
 
     // Launch remote browser using Cloudflare Browser Rendering binding
-    const browser = await puppeteer.launch(env.BROWSER);
+    const browser = await puppeteer.launch(env.MyPuppeteer);
 
     try {
       const page = await browser.newPage();
