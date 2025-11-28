@@ -1,4 +1,4 @@
-name = "roku-staticizer"
+name = "staticizer"
 main = "worker.js"
 compatibility_date = "2023-11-01"
 
@@ -8,3 +8,18 @@ binding = "AI"
 [browser]
 binding = "BROWSER"
 # You must enable the Browser Rendering API in your Cloudflare dashboard
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1
