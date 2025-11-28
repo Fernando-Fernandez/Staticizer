@@ -60,7 +60,7 @@ function rewriteLinks(html, targetUrl) {
       `href="/?u=${encodeURIComponent(origin + path)}"`
   );
 
-  // Relative links (href="/...") – assume same origin
+  // Relative links (href="/...") - assume same origin
   html = html.replace(
     /href="\/([^"]*)"/g,
     (match, path) =>
