@@ -1,6 +1,6 @@
 # Staticizer
 
-Simple Cloudflare Worker that automates browser tasks via `env.MyPuppeteer` and `env.AI`.
+Staticizer is a Cloudflare Worker that accepts a dynamic page URL via `?u=<url>`, renders it remotely with `env.MyPuppeteer`, and returns a fully static HTML snapshot—perfect for serving content from JavaScript-heavy sites without client-side execution.
 
 ## Deploy
 

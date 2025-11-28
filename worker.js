@@ -31,6 +31,7 @@ export default {
     try {
       const page = await browser.newPage();
       await page.goto(targetUrl.toString(), { waitUntil: "networkidle0" });
+      await clickAllButtons(page);
 
       let html = await page.content();
 
@@ -78,6 +79,19 @@ function rewriteLinks(html, targetUrl) {
   });
 
   return html;
+}
+
+async function clickAllButtons(page) {
+  await page.waitForSelector("button", { timeout: 2000 }).catch(() => null);
+  await page.$$eval("button", (buttons) => {
+    buttons.forEach((btn) => {
+      try {
+        btn.click();
+      } catch (err) {
+        // ignore buttons that throw
+      }
+    });
+  });
 }
 
 function escapeRegExp(str) {
