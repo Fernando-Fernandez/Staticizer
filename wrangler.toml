@@ -8,6 +8,8 @@ binding = "AI"
 [browser]
 binding = "BROWSER"
 # You must enable the Browser Rendering API in your Cloudflare dashboard
+compatibility_date = "2024-04-03"
+compatibility_flags = ["rpc"]
 
 [observability]
 enabled = true
