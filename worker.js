@@ -52,20 +52,28 @@ export default {
 // Rewrite only links that point to the same host as targetUrl
 function rewriteLinks(html, targetUrl) {
   const origin = `${targetUrl.protocol}//${targetUrl.host}`;
+  const escapedOrigin = escapeRegExp(origin);
 
-  // Absolute links to same origin
-  html = html.replace(
-    new RegExp(`href="${origin}([^"]*)"`, "g"),
-    (match, path) =>
-      `href="/?u=${encodeURIComponent(origin + path)}"`
+  // Absolute links on same origin, only for anchor tags
+  const absoluteAnchorRegex = new RegExp(
+    `(<a\\b[^>]*?href=")${escapedOrigin}([^"]*)"`,
+    "gi"
   );
+  html = html.replace(absoluteAnchorRegex, (match, prefix, path) => {
+    const rewritten = `/?u=${encodeURIComponent(origin + path)}`;
+    return `${prefix}${rewritten}"`;
+  });
 
-  // Relative links (href="/...") - assume same origin
-  html = html.replace(
-    /href="\/([^"]*)"/g,
-    (match, path) =>
-      `href="/?u=${encodeURIComponent(origin + "/" + path)}"`
-  );
+  // Relative anchor links
+  const relativeAnchorRegex = /(<a\b[^>]*?href=")\/([^"]*)"/gi;
+  html = html.replace(relativeAnchorRegex, (match, prefix, path) => {
+    const rewritten = `/?u=${encodeURIComponent(`${origin}/${path}`)}`;
+    return `${prefix}${rewritten}"`;
+  });
 
   return html;
+}
+
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
