@@ -83,15 +83,32 @@ function rewriteLinks(html, targetUrl) {
 
 async function clickAllButtons(page) {
   await page.waitForSelector("button", { timeout: 2000 }).catch(() => null);
-  await page.$$eval("button", (buttons) => {
-    buttons.forEach((btn) => {
-      try {
-        btn.click();
-      } catch (err) {
-        // ignore buttons that throw
-      }
+
+  const maxPasses = 10;
+  for (let i = 0; i < maxPasses; i++) {
+    const newlyClicked = await page.evaluate(() => {
+      const buttons = Array.from(
+        document.querySelectorAll("button:not([data-staticizer-clicked])")
+      );
+
+      buttons.forEach((btn) => {
+        btn.dataset.staticizerClicked = "1";
+        try {
+          btn.click();
+        } catch (_) {
+          // ignore buttons that throw
+        }
+      });
+
+      return buttons.length;
     });
-  });
+
+    if (!newlyClicked) {
+      break;
+    }
+
+    await page.waitForTimeout(300);
+  }
 }
 
 function escapeRegExp(str) {
