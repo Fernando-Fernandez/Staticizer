@@ -71,6 +71,12 @@ function rewriteLinks(html, targetUrl) {
     return `${prefix}${rewritten}"`;
   });
 
+  // Non-anchor assets (img/link/etc.) using root-relative paths => make absolute
+  const relativeAssetRegex = /(<(?!a\b)[^>]*?\b(?:src|href)=")\/([^"]*)"/gi;
+  html = html.replace(relativeAssetRegex, (match, prefix, path) => {
+    return `${prefix}${origin}/${path}"`;
+  });
+
   return html;
 }
 
