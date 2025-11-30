@@ -4,6 +4,9 @@ const ALLOWED_HOSTS = [
   "support.roku.com",
   // add more if you want multi-domain later
 ];
+const NAVIGATION_TIMEOUT_MS = 15000;
+const INTERACTION_TIMEOUT_MS = 7000;
+const SERIALIZATION_TIMEOUT_MS = 5000;
 
 export default {
   async fetch(request, env, ctx) {
@@ -30,10 +33,25 @@ export default {
 
     try {
       const page = await browser.newPage();
-      await page.goto(targetUrl.toString(), { waitUntil: "networkidle0" });
-      await clickAllButtons(page);
+      page.setDefaultNavigationTimeout(NAVIGATION_TIMEOUT_MS);
+      page.setDefaultTimeout(INTERACTION_TIMEOUT_MS);
 
-      let html = await page.content();
+      await withTimeout(
+        page.goto(targetUrl.toString(), { waitUntil: "networkidle0" }),
+        NAVIGATION_TIMEOUT_MS + 2000,
+        "Navigation timed out"
+      );
+      await withTimeout(
+        clickAllButtons(page),
+        INTERACTION_TIMEOUT_MS,
+        "Interaction timed out"
+      );
+
+      let html = await withTimeout(
+        page.content(),
+        SERIALIZATION_TIMEOUT_MS,
+        "Page serialization timed out"
+      );
 
       // rewrite internal links to go back through this worker
       html = rewriteLinks(html, targetUrl);
@@ -44,6 +62,13 @@ export default {
       return new Response(html, {
         headers: { "Content-Type": "text/html; charset=utf-8" },
       });
+    } catch (err) {
+      console.error("Staticizer render error:", err);
+      const status =
+        typeof err?.message === "string" && err.message.includes("timed out")
+          ? 504
+          : 500;
+      return new Response("Failed to render page", { status });
     } finally {
       await browser.close();
     }
@@ -113,6 +138,19 @@ async function clickAllButtons(page) {
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withTimeout(promise, ms, message) {
+  let timeoutId;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(message)), ms);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function escapeRegExp(str) {
