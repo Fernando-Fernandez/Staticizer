@@ -3,8 +3,8 @@ main = "worker.js"
 compatibility_date = "2024-04-03"
 compatibility_flags = [ "nodejs_compat" ]
 
-[ai]
-binding = "AI"
+#[ai]
+#binding = "AI"
 
 [browser]
 binding = "MyPuppeteer"
