@@ -25,7 +25,7 @@ export default {
     }
 
     if (!ALLOWED_HOSTS.includes(targetUrl.host)) {
-      return new Response("Domain not allowed", { status: 403 });
+    //  return new Response("Domain not allowed", { status: 403 });
     }
 
     // Launch remote browser using Cloudflare Browser Rendering binding
